@@ -71,11 +71,15 @@ def solve_board(board):
     csp = create_sudoku_csp('sudokus/' + board + '.txt')
     assignment = csp.backtracking_search()
     print_sudoku_solution(assignment)
+    print "Backtrack calls:", csp.calls
+    print "Failures:", csp.failures
+
+
 
 
 if __name__ == '__main__':
 
     for board in ['easy', 'medium', 'hard', 'veryhard']:
         print
-        print 'Solving board: ' + board
+        print 'Solving board: ' + board + ".txt"
         solve_board(board)

@@ -15,6 +15,10 @@ class CSP:
         # the variable pair (i, j)
         self.constraints = {}
 
+        # Counters
+        self.failures = 0
+        self.calls = 0
+
     def add_variable(self, name, domain):
         """Add a new variable to the CSP. 'name' is the variable name
         and 'domain' is a list of the legal values for the variable.
@@ -106,6 +110,8 @@ class CSP:
         assignments and inferences that took place in previous
         iterations of the loop.
         """
+        # Backtrack call.
+        self.calls += 1
         # Find out if board is completed.
         # That is when all domains has length one.
         complete = True
@@ -135,7 +141,8 @@ class CSP:
                 # If we are finished, return the result.
                 if result:
                     return result
-        # Not finished, return result as False.
+        # Not finished, return result as False, increment failure.
+        self.failures += 1
         return False
 
     def select_unassigned_variable(self, assignment):
