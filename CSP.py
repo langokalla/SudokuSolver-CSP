@@ -1,4 +1,3 @@
-#!/usr/bin/python
 
 import copy
 import itertools
@@ -73,10 +72,7 @@ class CSP:
         """This functions starts the CSP solver and returns the found
         solution.
         """
-        # Make a so-called "deep copy" of the dictionary containing the
-        # domains of the CSP variables. The deep copy is required to
-        # ensure that any changes made to 'assignment' does not have any
-        # side effects elsewhere.
+        # Make deep copy.
         assignment = copy.deepcopy(self.domains)
 
         # Run AC-3 on all constraints in the CSP, to weed out all of the
@@ -110,27 +106,36 @@ class CSP:
         assignments and inferences that took place in previous
         iterations of the loop.
         """
+        # Find out if board is completed.
+        # That is when all domains has length one.
         complete = True
         for x in assignment.keys():
             if len(assignment[x]) != 1:
                 complete = False
                 break
 
+        # Return assignment if complete.
         if complete:
             return assignment
 
+        # Select an unassigned variable
         unassigned = self.select_unassigned_variable(assignment)
-        if unassigned is None:
-            return assignment
 
+        # Iterate all values in unassigned's domain.
+        # Make a deep compy of assignment and add value
+        # to unassigned's domain in the copy.
         for value in assignment[unassigned]:
             domain_copy = copy.deepcopy(assignment)
             domain_copy[unassigned] = [value]
+            # Fetch all arcs and put them in list (used as queue).
             queue = self.get_all_arcs()
+            # If we have a interference, set new result to recursive backtracking.
             if self.inference(domain_copy, queue):
                 result = self.backtrack(domain_copy)
+                # If we are finished, return the result.
                 if result:
                     return result
+        # Not finished, return result as False.
         return False
 
     def select_unassigned_variable(self, assignment):
@@ -139,6 +144,8 @@ class CSP:
         in 'assignment' that have not yet been decided, i.e. whose list
         of legal values has a length greater than one.
         """
+        # Select the first, unassigned variable we find;
+        # that is when the domain has more than one item.
         for key, val in assignment.iteritems():
             if len(val) > 1:
                 return key
@@ -149,11 +156,16 @@ class CSP:
         the lists of legal values for each undecided variable. 'queue'
         is the initial queue of arcs that should be visited.
         """
+        # Run while we have a non-empty queue.
         while queue:
+            # Pop from start in queue.
             i, j = queue.pop(0)
+            # If revised is success, proceed.
             if self.revise(assignment, i, j):
+                # If the domain is empty, return negative interference.
                 if len(assignment[i]) == 0:
                     return False
+                # Get all neighbours of i, if j isn't there, append it to queue.
                 neighbors = self.get_all_neighboring_arcs(i)
                 for n in neighbors:
                     if j not in n[0]:
@@ -169,14 +181,23 @@ class CSP:
         between i and j, the value should be deleted from i's list of
         legal values in 'assignment'.
         """
+        # Get constraints between two cells.
         constraints = self.constraints[i][j]
+        # Set revised to False.
         revised = False
+        # Iterate through i's domain.
         for x in assignment[i]:
+            # Set variable satisfied. Check if revising is satisfied.
             satisfied = False
             for y in assignment[j]:
+                # Iterate through y's domain.
+                # If x and y is satisfied in constraints,
+                # break when satisfied.
                 if (x, y) in constraints:
                     satisfied = True
                     break
+            # If the revision is not satisfied, remove i from x's domain,
+            # and set process to succeeded.
             if not satisfied:
                 assignment[i].remove(x)
                 revised = True
