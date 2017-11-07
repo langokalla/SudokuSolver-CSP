@@ -7,6 +7,6 @@ Gain hands-on experience with Constraint Satisfaction Problems (CSPs) by impleme
 solver and using it to solve Sudoku boards.
 
 #### Run code
-As the code is written now, just run `methods.py`.
+As the code is written now, navigate to directory and run `$ python methods.py` in terminal.
 
 More info in case description `Solving Constraint Satisfaction Problems.pdf`.
